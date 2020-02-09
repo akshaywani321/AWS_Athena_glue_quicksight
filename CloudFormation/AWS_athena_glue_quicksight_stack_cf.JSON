@@ -1,0 +1,105 @@
+{
+    "AWSTemplateFormatVersion" : "2020-02-06",
+    "description" : "Cloudformation stack for S3 buckets, Glue catalogs, Glue crawlers and IAM policies",
+    "Parameters": {
+        "Data_Bucket_Name": {
+            "Description": "Name of S3 bucket to store data",
+            "Type": "String"
+        },
+        "Script_Bucket_Name": {
+            "Description": "Name of S3 bucket to store programming scripts",
+            "Type": "String"
+        },
+        "Log_Bucket_Name": {
+            "Description": "Name of S3 bucket to store log files",
+            "Type": "String"
+        },
+        "GlueDatabase_Name": {
+            "Description": "Name of S3 bucket to store data",
+            "Type": "String",
+            "default":"smart_hub_data_catalog"
+        }
+    },
+    "Resources": {
+        "Data_Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName" : {"Ref":"Data_Bucket_Name"}
+            }
+        },
+        "Script_Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName" : {"Ref":"Script_Bucket_Name"}
+            }
+        },
+        "log_Bucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+                "BucketName" : {"Ref":"Log_Bucket_Name"}
+            }
+        },
+        "Glue_Database": {
+            "Type" : "AWS::Glue::Database",
+            "Properties": {
+                "CatalogId": {"Ref":"AWS::AccountId"},
+                "DataBaseInput":{
+                    "Name":{"Ref":"GlueDatabase_Name"},
+                    "Description":"Glue Catalog to store Metadata"
+                }
+            }
+        },
+        "Usage_Data":{
+            "DependsOn" : "Glue_Database",
+            "Type" : "AWS::Glue::Table",
+            "Description" : "Glue Table for Location Data",
+            "Properties" : {
+                "CatalogId" : {"Ref":"AWS::AccountId"},
+                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "TableInput" : {
+                    "Description" : "Glue Table for Location Data",
+                    "Name" : "smart_hub_data_json",
+                    "Parameters" : {
+                        "classification": "json", 
+                        "compressionType": "none" 
+                    },
+                    "TableType" : "EXTERNAL TABLE",
+                    "PartitionKeys" : [ 
+                        {
+                            "Name" : "dt",
+                            "Type" : "date"
+                        }
+                    ],
+                },
+                "StorageDescriptor" : {
+                    "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
+                    "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                    "Columns":[
+                        {
+                            "Name" : "loc_id",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "ts",
+                            "Type" : "bigint"
+                        },
+                        {
+                            "Name" : "data",
+                            "Type" : "struct<s_01:double,s_02:double,s_03:double,s_04:double,s_05:double,s_06:double,s_07:double,s_08:double,s_09:double,s_10:double>"
+                        }
+                    ],
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_data_json"] ] },
+                    "SerdeInfo":{
+                        "Parameters" : {
+                            "feild.delim":","
+                        },
+                        "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
+                    }
+
+                }                    
+            }
+
+        }
+    }
+
+}
