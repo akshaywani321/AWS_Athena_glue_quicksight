@@ -52,13 +52,13 @@
         "Usage_Data":{
             "DependsOn" : "Glue_Database",
             "Type" : "AWS::Glue::Table",
-            "Description" : "Glue Table for Location Data",
+            "Description" : "Glue Table for Usage Data",
             "Properties" : {
                 "CatalogId" : {"Ref":"AWS::AccountId"},
                 "DatabaseName" : {"Ref":"GlueDatabase_Name"},
                 "TableInput" : {
-                    "Description" : "Glue Table for Location Data",
-                    "Name" : "smart_hub_data_json",
+                    "Description" : "Glue Table for Usage Data",
+                    "Name" : "smart_hub_usage_data_json",
                     "Parameters" : {
                         "classification": "json", 
                         "compressionType": "none" 
@@ -69,7 +69,7 @@
                             "Name" : "dt",
                             "Type" : "date"
                         }
-                    ],
+                    ]
                 },
                 "StorageDescriptor" : {
                     "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
@@ -99,7 +99,544 @@
                 }                    
             }
 
-        }
-    }
+        },
+        "Location_Data":{
+            "DependsOn" : "Glue_Database",
+            "Type" : "AWS::Glue::Table",
+            "Description" : "Glue Table for location Data",
+            "Properties" : {
+                "CatalogId" : {"Ref":"AWS::AccountId"},
+                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "TableInput" : {
+                    "Description" : "Glue Table for location Data",
+                    "Name" : "smart_hub_location_csv",
+                    "Parameters" : {
+                        "classification": "csv", 
+                        "compressionType": "none",
+                        "skip.header.line.count": "1" 
+                    },
+                    "TableType" : "EXTERNAL TABLE",
+                    "PartitionKeys" : [ 
+                        {
+                            "Name" : "state",
+                            "Type" : "string"
+                        }
+                    ]
+                },
+                "StorageDescriptor" : {
+                    "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
+                    "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                    "Columns":[
+                        {
+                            "Name" : "lon",
+                            "Type" : "double"
+                        },
+                        {
+                            "Name" : "lat",
+                            "Type" : "double"
+                        },
+                        {
+                            "Name" : "number",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "street",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "unit",
+                            "Type" : "int"
+                        },
+                        {
+                            "Name" : "city",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "district",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "region",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "postcode",
+                            "Type" : "int"
+                        },
+                        {
+                            "Name" : "id",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "hash",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "tz",
+                            "Type" : "string"
+                        }
+                    ],
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_sensor_mapping_json"] ] },
+                    "SerdeInfo":{
+                        "Parameters" : {
+                            "feild.delim":","
+                        },
+                        "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
+                    }
 
+                }                    
+            }
+
+        },
+        "Mapping_Data":{
+            "DependsOn" : "Glue_Database",
+            "Type" : "AWS::Glue::Table",
+            "Description" : "Glue Table for Mapping Data",
+            "Properties" : {
+                "CatalogId" : {"Ref":"AWS::AccountId"},
+                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "TableInput" : {
+                    "Description" : "Glue Table for Mapping Data",
+                    "Name" : "smart_hub_sensor_mapping_json",
+                    "Parameters" : {
+                        "classification": "json", 
+                        "compressionType": "none" 
+                    },
+                    "TableType" : "EXTERNAL TABLE",
+                    "PartitionKeys" : [ 
+                        {
+                            "Name" : "state",
+                            "Type" : "string"
+                        }
+                    ]
+                },
+                "StorageDescriptor" : {
+                    "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
+                    "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                    "Columns":[
+                        {
+                            "Name" : "loc_id",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "id",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "description",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "location",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "watts",
+                            "Type" : "int"
+                        },
+                        {
+                            "Name" : "last_modified",
+                            "Type" : "int"
+                        }
+                    ],
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_location_csv"] ] },
+                    "SerdeInfo":{
+                        "Parameters" : {
+                            "feild.delim":","
+                        },
+                        "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
+                    }
+
+                }                    
+            }
+
+        },
+        "Rates_Data":{
+            "DependsOn" : "Glue_Database",
+            "Type" : "AWS::Glue::Table",
+            "Description" : "Glue Table for Rates Data",
+            "Properties" : {
+                "CatalogId" : {"Ref":"AWS::AccountId"},
+                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "TableInput" : {
+                    "Description" : "Glue Table for rates Data",
+                    "Name" : "smart_hub_rates_xml",
+                    "Parameters" : {
+                        "classification": "xml", 
+                        "compressionType": "none" 
+                    },
+                    "TableType" : "EXTERNAL TABLE"
+                },
+                "StorageDescriptor" : {
+                    "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
+                    "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                    "Columns":[
+                        {
+                            "Name" : "from",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "month",
+                            "Type" : "int"
+                        },
+                        {
+                            "Name" : "rate",
+                            "Type" : "double"
+                        },
+                        {
+                            "Name" : "state",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "to",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "type",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name": "year",
+                            "Type": "string"
+                        }
+                    ],
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_rates_xml"] ] },
+                    "SerdeInfo":{
+                        "Parameters" : {
+                            "feild.delim":","
+                        },
+                        "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
+                    }
+
+                }                    
+            }
+
+        },
+        "ETL_Parquet_tmp_Data":{
+            "DependsOn" : "Glue_Database",
+            "Type" : "AWS::Glue::Table",
+            "Description" : "Glue Table for Temporary Output Data",
+            "Properties" : {
+                "CatalogId" : {"Ref":"AWS::AccountId"},
+                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "TableInput" : {
+                    "Description" : "Glue Table for Temporary Output Data",
+                    "Name" : "etl_tmp_output_parquet",
+                    "Parameters" : {
+                        "has_encrypted_data": "false",
+                        "parquet.compression": "SNAPPY",
+                        "classification": "parquet",
+                        "compressionType": "none"
+                    },
+                    "TableType" : "EXTERNAL TABLE",
+                    "PartitionKeys" : [ 
+                        {
+                            "Name" : "loc_id",
+                            "Type" : "string"
+                        }
+                    ]
+                },
+                "StorageDescriptor" : {
+                    "InputFormat" : "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
+                    "OutputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
+                    "Columns":[
+                        {
+                            "Name" : "ts",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "device",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "location",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "state",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "type",
+                            "Type" : "string"
+                        },
+                        {
+                            "Name" : "kwh",
+                            "Type" : "double"
+                        },
+                        {
+                            "Name": "cents_per_kwh",
+                            "Type": "double"
+                        },
+                        {
+                            "Name": "cost",
+                            "Type": "double"
+                        },
+                        {
+                            "Name": "state",
+                            "Type": "string"
+                        }
+                    ],
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/etl_tmp_output_parquet"] ] },
+                    "SerdeInfo":{
+                        "SerializationLibrary" : "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
+                    }
+
+                }                    
+            }
+
+        },
+        "Crawler_IAM_Role":{
+            "Type" : "AWS::IAM::Role",
+            "Properties" : {
+                "Description":"IAM Role for Crawlers",
+                "AssumeRolePolicyDocument" : {
+                    "Version": "2020-02-08",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "glue.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "ManagedPolicyArns" : ["arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"],
+                "Path" : "/",
+                "Policies" : [
+                    {
+                        "PolicyDocument" : {
+                            "version":"2020-02-08",
+                            "statement":[
+                                {
+                                    "Effect":"allow",
+                                    "Action":[
+                                        "s3:GetObject",
+                                        "s3:PutObject",
+                                        "s3:DeleteObject"
+                                    ],
+                                    "Resource":"*"
+                                }
+                            ]
+                        },
+                        "PolicyName" : "Crawler_IAM_Policy"
+                    }
+                ],
+                "RoleName" : "Smart_Hub_Crawler_Role"
+            }
+        },
+        "Location_Crawler":{
+            "Type" : "AWS::Glue::Crawler",
+            "Properties" : {
+                "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
+                "Name" : "smart-hub-locations-csv",
+                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "SchemaChangePolicy" : {
+                    "DeleteBehavior" : "UPDATE IN DATABASE",
+                    "UpdateBehavior" : "LOG"
+                },
+                "Targets" : {
+                    "CatalogTargets" : [
+                        {
+                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
+                            "Tables" : [ { "Ref" : "Location_Data" } ]
+                          }
+                    ]
+                }
+              },
+              "DependsOn":[
+                  "Crawler_IAM_Role",
+                  "Glue_Database",
+                  "Data_Bucket_Name"
+              ]
+
+        },
+        "Mapping_Crawler":{
+            "Type" : "AWS::Glue::Crawler",
+            "Properties" : {
+                "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
+                "Name" : "smart-hub-sensor-mappings-json",
+                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "SchemaChangePolicy" : {
+                    "DeleteBehavior" : "UPDATE IN DATABASE",
+                    "UpdateBehavior" : "LOG"
+                },
+                "Targets" : {
+                    "CatalogTargets" : [
+                        {
+                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
+                            "Tables" : [ { "Ref" : "Mapping_Data" } ]
+                          }
+                    ]
+                },
+              "DependsOn":[
+                  "Crawler_IAM_Role",
+                  "Glue_Database",
+                  "Data_Bucket_Name"
+              ]
+            }
+        },
+        "Usage_Crawler":{
+            "Type" : "AWS::Glue::Crawler",
+            "Properties" : {
+                "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
+                "Name" : "smart-hub-usage-data-json",
+                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "SchemaChangePolicy" : {
+                    "DeleteBehavior" : "UPDATE IN DATABASE",
+                    "UpdateBehavior" : "LOG"
+                },
+                "Targets" : {
+                    "CatalogTargets" : [
+                        {
+                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
+                            "Tables" : [ { "Ref" : "Usage_Data" } ]
+                          }
+                    ]
+                },
+              "DependsOn":[
+                  "Crawler_IAM_Role",
+                  "Glue_Database",
+                  "Data_Bucket_Name"
+              ]
+            }
+        },
+        "Rates_Crawler":{
+            "Type" : "AWS::Glue::Crawler",
+            "Properties" : {
+                "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
+                "Name" : "smart-hub-rates-data-json",
+                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "SchemaChangePolicy" : {
+                    "DeleteBehavior" : "UPDATE IN DATABASE",
+                    "UpdateBehavior" : "LOG"
+                },
+                "Targets" : {
+                    "CatalogTargets" : [
+                        {
+                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
+                            "Tables" : [ { "Ref" : "Rates_Data" } ]
+                          }
+                    ]
+                },
+              "DependsOn":[
+                  "Crawler_IAM_Role",
+                  "Glue_Database",
+                  "Data_Bucket_Name"
+              ]
+            }
+        },
+        "Rates_Parquet_Crawler":{
+            "Type" : "AWS::Glue::Crawler",
+            "Properties" : {
+                "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
+                "Name" : "smart-hub-rates-parquet",
+                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "SchemaChangePolicy" : {
+                    "DeleteBehavior" : "UPDATE IN DATABASE",
+                    "UpdateBehavior" : "LOG"
+                },
+                "Targets" : {
+                    "S3Targets" : [
+                        {
+                            "path":{ "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_rates_parquet"] ] }
+                        }
+                    ]
+                },
+              "DependsOn":[
+                  "Crawler_IAM_Role",
+                  "Glue_Database",
+                  "Data_Bucket_Name"
+              ]
+            }
+        },
+        "ETL_Temp_Parquet_Crawler":{
+            "Type" : "AWS::Glue::Crawler",
+            "Properties" : {
+                "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
+                "Name" : "smart-hub-etl-tmp-parquet",
+                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "SchemaChangePolicy" : {
+                    "DeleteBehavior" : "UPDATE IN DATABASE",
+                    "UpdateBehavior" : "LOG"
+                },
+                "Targets" : {
+                    "CatalogTargets" : [
+                        {
+                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
+                            "Tables" : [ { "Ref" : "ETL_Parquet_tmp_Data" } ]
+                          }
+                    ]
+                },
+              "DependsOn":[
+                  "Crawler_IAM_Role",
+                  "Glue_Database",
+                  "Data_Bucket_Name"
+              ]
+            }
+        }, 
+        "ETL_Parquet_Crawler":{
+            "Type" : "AWS::Glue::Crawler",
+            "Properties" : {
+                "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
+                "Name" : "smart-hub-etl-output-parquet",
+                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "SchemaChangePolicy" : {
+                    "DeleteBehavior" : "UPDATE IN DATABASE",
+                    "UpdateBehavior" : "LOG"
+                },
+                "Targets" : {
+                    "CatalogTargets" : [
+                        {
+                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
+                            "Tables" : [ "etl_output_parquet"]
+                        }
+                    ]
+                },
+              "DependsOn":[
+                  "Crawler_IAM_Role",
+                  "Glue_Database",
+                  "Data_Bucket_Name"
+              ]
+            }
+        },
+        "ETL_Glue_Job":{
+            "Type" : "AWS::Glue::Job",
+            "Properties" : {
+                "Command" : {
+                    "Name" : "glueetl",
+                    "PythonVersion" : 3,
+                    "ScriptLocation" : {"fn::!Sub":["s3://${ScriptBucketName}/Glue_Job/rates_xml_to_parquet.py"]}
+                },
+                "DefaultArguments":{
+                    "--s3_output_path": {"Fn::Sub" : "s3://${Data_Bucket_Name}/smart_hub_rates_parquet"},
+                    "--source_glue_database": {"!Ref":"Glue_Database"},
+                    "--source_glue_table": "smart_hub_rates_xml",
+                    "--job-bookmark-option": "job-bookmark-enable",
+                    "--enable-spark-ui": "true",
+                    "--spark-event-logs-path": {"Fn::Sub" : "s3://${Log_Bucket_Name}/glue-etl-jobs/"}
+                },
+                "Description" : "Job to convert electricity rates from xml to parquet",
+                "ExecutionProperty" : {
+                    "MaxConcurrentRuns":2
+                },
+                "GlueVersion" : "1.0",
+                "MaxRetries" : 0,
+                "Name" : "xml-to-parquet-etl-job",
+                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]}
+            },
+            "DependsOn":[
+                "Crawler_IAM_Role",
+                "Glue_Database",
+                "Data_Bucket_Name",
+                "Script_Bucket_Name",
+                "Log_Bucket_Name"
+            ]
+          }
+    }
 }
