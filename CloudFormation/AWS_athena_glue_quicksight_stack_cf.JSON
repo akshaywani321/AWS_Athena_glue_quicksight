@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion" : "2020-02-06",
-    "description" : "Cloudformation stack for S3 buckets, Glue catalogs, Glue crawlers and IAM policies",
+    "Description" : "Cloudformation stack for S3 buckets, Glue catalogs, Glue crawlers and IAM policies",
     "Parameters": {
         "Data_Bucket_Name": {
             "Description": "Name of S3 bucket to store data",
