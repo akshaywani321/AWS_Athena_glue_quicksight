@@ -637,6 +637,36 @@
                 "Script_Bucket_Name",
                 "Log_Bucket_Name"
             ]
-          }
+        }
+    },
+    "Output":{
+        "DataBucketExport":{
+            "Description" : "S3 bucket that holds data files",
+            "Value" : {"Ref":"Data_Bucket_Name"},
+            "Export" : {
+              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "Data_Bucket"] ] }
+            }
+        },
+        "ScriptBucketExport":{
+            "Description" : "S3 bucket that holds Scripts",
+            "Value" : {"Ref":"Script_Bucket_Name"},
+            "Export" : {
+              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "Script_Bucket"] ] }
+            }
+        },
+        "LogBucketExport":{
+            "Description" : "S3 bucket that store logs",
+            "Value" : {"Ref":"Log_Bucket_Name"},
+            "Export" : {
+              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "Log_Bucket"] ] }
+            }
+        },
+        "GlueDatabaseExport":{
+            "Description" : "Glue database",
+            "Value" : {"Ref":"GlueDatabase_Name"},
+            "Export" : {
+              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "Glue_Database"] ] }
+            }
+        },
     }
 }
