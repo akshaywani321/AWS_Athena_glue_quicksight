@@ -1,64 +1,64 @@
 {
-    "AWSTemplateFormatVersion" : "2020-02-06",
+    "AWSTemplateFormatVersion" : "2010-09-09",
     "Description" : "Cloudformation stack for S3 buckets, Glue catalogs, Glue crawlers and IAM policies",
     "Parameters": {
-        "Data_Bucket_Name": {
+        "DataBucketName": {
             "Description": "Name of S3 bucket to store data",
             "Type": "String"
         },
-        "Script_Bucket_Name": {
+        "ScriptBucketName": {
             "Description": "Name of S3 bucket to store programming scripts",
             "Type": "String"
         },
-        "Log_Bucket_Name": {
+        "LogBucketName": {
             "Description": "Name of S3 bucket to store log files",
             "Type": "String"
         },
-        "GlueDatabase_Name": {
+        "GlueDatabaseName": {
             "Description": "Name of S3 bucket to store data",
             "Type": "String",
-            "default":"smart_hub_data_catalog"
+            "Default":"smart_hub_data_catalog"
         }
     },
     "Resources": {
-        "Data_Bucket": {
+        "DataBucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-                "BucketName" : {"Ref":"Data_Bucket_Name"}
+                "BucketName" : {"Ref":"DataBucketName"}
             }
         },
-        "Script_Bucket": {
+        "ScriptBucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-                "BucketName" : {"Ref":"Script_Bucket_Name"}
+                "BucketName" : {"Ref":"ScriptBucketName"}
             }
         },
-        "log_Bucket": {
+        "logBucket": {
             "Type": "AWS::S3::Bucket",
             "Properties": {
-                "BucketName" : {"Ref":"Log_Bucket_Name"}
+                "BucketName" : {"Ref":"LogBucketName"}
             }
         },
-        "Glue_Database": {
+        "GlueDatabase": {
             "Type" : "AWS::Glue::Database",
             "Properties": {
                 "CatalogId": {"Ref":"AWS::AccountId"},
                 "DataBaseInput":{
-                    "Name":{"Ref":"GlueDatabase_Name"},
+                    "Name":{"Ref":"GlueDatabaseName"},
                     "Description":"Glue Catalog to store Metadata"
                 }
             }
         },
-        "Usage_Data":{
-            "DependsOn" : "Glue_Database",
+        "UsageData":{
+            "DependsOn" : "GlueDatabase",
             "Type" : "AWS::Glue::Table",
             "Description" : "Glue Table for Usage Data",
             "Properties" : {
                 "CatalogId" : {"Ref":"AWS::AccountId"},
-                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "DatabaseName" : {"Ref":"GlueDatabaseName"},
                 "TableInput" : {
                     "Description" : "Glue Table for Usage Data",
-                    "Name" : "smart_hub_usage_data_json",
+                    "Name" : "smart_hub_UsageData_json",
                     "Parameters" : {
                         "classification": "json", 
                         "compressionType": "none" 
@@ -88,7 +88,7 @@
                             "Type" : "struct<s_01:double,s_02:double,s_03:double,s_04:double,s_05:double,s_06:double,s_07:double,s_08:double,s_09:double,s_10:double>"
                         }
                     ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_data_json"] ] },
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_data_json"] ] },
                     "SerdeInfo":{
                         "Parameters" : {
                             "feild.delim":","
@@ -100,13 +100,13 @@
             }
 
         },
-        "Location_Data":{
-            "DependsOn" : "Glue_Database",
+        "LocationData":{
+            "DependsOn" : "GlueDatabase",
             "Type" : "AWS::Glue::Table",
             "Description" : "Glue Table for location Data",
             "Properties" : {
                 "CatalogId" : {"Ref":"AWS::AccountId"},
-                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "DatabaseName" : {"Ref":"GlueDatabaseName"},
                 "TableInput" : {
                     "Description" : "Glue Table for location Data",
                     "Name" : "smart_hub_location_csv",
@@ -176,7 +176,7 @@
                             "Type" : "string"
                         }
                     ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_sensor_mapping_json"] ] },
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_sensor_mapping_json"] ] },
                     "SerdeInfo":{
                         "Parameters" : {
                             "feild.delim":","
@@ -188,13 +188,13 @@
             }
 
         },
-        "Mapping_Data":{
-            "DependsOn" : "Glue_Database",
+        "MappingData":{
+            "DependsOn" : "GlueDatabase",
             "Type" : "AWS::Glue::Table",
             "Description" : "Glue Table for Mapping Data",
             "Properties" : {
                 "CatalogId" : {"Ref":"AWS::AccountId"},
-                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "DatabaseName" : {"Ref":"GlueDatabaseName"},
                 "TableInput" : {
                     "Description" : "Glue Table for Mapping Data",
                     "Name" : "smart_hub_sensor_mapping_json",
@@ -239,7 +239,7 @@
                             "Type" : "int"
                         }
                     ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_location_csv"] ] },
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_location_csv"] ] },
                     "SerdeInfo":{
                         "Parameters" : {
                             "feild.delim":","
@@ -251,13 +251,13 @@
             }
 
         },
-        "Rates_Data":{
-            "DependsOn" : "Glue_Database",
+        "RatesData":{
+            "DependsOn" : "GlueDatabase",
             "Type" : "AWS::Glue::Table",
             "Description" : "Glue Table for Rates Data",
             "Properties" : {
                 "CatalogId" : {"Ref":"AWS::AccountId"},
-                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "DatabaseName" : {"Ref":"GlueDatabaseName"},
                 "TableInput" : {
                     "Description" : "Glue Table for rates Data",
                     "Name" : "smart_hub_rates_xml",
@@ -300,7 +300,7 @@
                             "Type": "string"
                         }
                     ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_rates_xml"] ] },
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_rates_xml"] ] },
                     "SerdeInfo":{
                         "Parameters" : {
                             "feild.delim":","
@@ -312,13 +312,13 @@
             }
 
         },
-        "ETL_Parquet_tmp_Data":{
-            "DependsOn" : "Glue_Database",
+        "ETLParquettmpData":{
+            "DependsOn" : "GlueDatabase",
             "Type" : "AWS::Glue::Table",
             "Description" : "Glue Table for Temporary Output Data",
             "Properties" : {
                 "CatalogId" : {"Ref":"AWS::AccountId"},
-                "DatabaseName" : {"Ref":"GlueDatabase_Name"},
+                "DatabaseName" : {"Ref":"GlueDatabaseName"},
                 "TableInput" : {
                     "Description" : "Glue Table for Temporary Output Data",
                     "Name" : "etl_tmp_output_parquet",
@@ -377,7 +377,7 @@
                             "Type": "string"
                         }
                     ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/etl_tmp_output_parquet"] ] },
+                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/etl_tmp_output_parquet"] ] },
                     "SerdeInfo":{
                         "SerializationLibrary" : "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
                     }
@@ -386,7 +386,7 @@
             }
 
         },
-        "Crawler_IAM_Role":{
+        "CrawlerIAMRole":{
             "Type" : "AWS::IAM::Role",
             "Properties" : {
                 "Description":"IAM Role for Crawlers",
@@ -406,7 +406,7 @@
                         }
                     ]
                 },
-                "ManagedPolicyArns" : ["arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"],
+                "ManagedPolicyArns" :["arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"],
                 "Path" : "/",
                 "Policies" : [
                     {
@@ -424,18 +424,18 @@
                                 }
                             ]
                         },
-                        "PolicyName" : "Crawler_IAM_Policy"
+                        "PolicyName" : "CrawlerIAMPolicy"
                     }
                 ],
                 "RoleName" : "Smart_Hub_Crawler_Role"
             }
         },
-        "Location_Crawler":{
+        "LocationCrawler":{
             "Type" : "AWS::Glue::Crawler",
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-locations-csv",
-                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
                 "SchemaChangePolicy" : {
                     "DeleteBehavior" : "UPDATE IN DATABASE",
                     "UpdateBehavior" : "LOG"
@@ -443,25 +443,24 @@
                 "Targets" : {
                     "CatalogTargets" : [
                         {
-                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
-                            "Tables" : [ { "Ref" : "Location_Data" } ]
+                            "DatabaseName" : { "Ref" : "GlueDatabaseName" },
+                            "Tables" : [ { "Ref" : "LocationData" } ]
                           }
                     ]
                 }
-              },
-              "DependsOn":[
-                  "Crawler_IAM_Role",
-                  "Glue_Database",
-                  "Data_Bucket_Name"
-              ]
-
+            },
+            "DependsOn":[
+                "CrawlerIAMRole",
+                "GlueDatabase",
+                "DataBucket"
+            ]
         },
-        "Mapping_Crawler":{
+        "MappingCrawler":{
             "Type" : "AWS::Glue::Crawler",
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-sensor-mappings-json",
-                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
                 "SchemaChangePolicy" : {
                     "DeleteBehavior" : "UPDATE IN DATABASE",
                     "UpdateBehavior" : "LOG"
@@ -469,24 +468,24 @@
                 "Targets" : {
                     "CatalogTargets" : [
                         {
-                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
-                            "Tables" : [ { "Ref" : "Mapping_Data" } ]
-                          }
+                            "DatabaseName" : { "Ref" : "GlueDatabaseName" },
+                            "Tables" : [ { "Ref" : "MappingData" } ]
+                        }
                     ]
-                },
-              "DependsOn":[
-                  "Crawler_IAM_Role",
-                  "Glue_Database",
-                  "Data_Bucket_Name"
-              ]
-            }
+                }
+            },
+            "DependsOn":[
+                "CrawlerIAMRole",
+                "GlueDatabase",
+                "DataBucket"
+            ]
         },
-        "Usage_Crawler":{
+        "UsageCrawler":{
             "Type" : "AWS::Glue::Crawler",
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-usage-data-json",
-                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
                 "SchemaChangePolicy" : {
                     "DeleteBehavior" : "UPDATE IN DATABASE",
                     "UpdateBehavior" : "LOG"
@@ -494,24 +493,24 @@
                 "Targets" : {
                     "CatalogTargets" : [
                         {
-                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
-                            "Tables" : [ { "Ref" : "Usage_Data" } ]
+                            "DatabaseName" : { "Ref" : "GlueDatabaseName" },
+                            "Tables" : [ { "Ref" : "UsageData" } ]
                           }
                     ]
-                },
-              "DependsOn":[
-                  "Crawler_IAM_Role",
-                  "Glue_Database",
-                  "Data_Bucket_Name"
-              ]
-            }
+                }
+            },
+            "DependsOn":[
+                "CrawlerIAMRole",
+                "GlueDatabase",
+                "DataBucket"
+            ]
         },
-        "Rates_Crawler":{
+        "RatesCrawler":{
             "Type" : "AWS::Glue::Crawler",
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-rates-data-json",
-                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
                 "SchemaChangePolicy" : {
                     "DeleteBehavior" : "UPDATE IN DATABASE",
                     "UpdateBehavior" : "LOG"
@@ -519,24 +518,24 @@
                 "Targets" : {
                     "CatalogTargets" : [
                         {
-                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
-                            "Tables" : [ { "Ref" : "Rates_Data" } ]
+                            "DatabaseName" : { "Ref" : "GlueDatabaseName" },
+                            "Tables" : [ { "Ref" : "RatesData" } ]
                           }
                     ]
-                },
-              "DependsOn":[
-                  "Crawler_IAM_Role",
-                  "Glue_Database",
-                  "Data_Bucket_Name"
-              ]
-            }
+                }
+            },
+            "DependsOn":[
+                "CrawlerIAMRole",
+                "GlueDatabase",
+                "DataBucket"
+            ]
         },
-        "Rates_Parquet_Crawler":{
+        "RatesParquetCrawler":{
             "Type" : "AWS::Glue::Crawler",
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-rates-parquet",
-                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
                 "SchemaChangePolicy" : {
                     "DeleteBehavior" : "UPDATE IN DATABASE",
                     "UpdateBehavior" : "LOG"
@@ -544,23 +543,23 @@
                 "Targets" : {
                     "S3Targets" : [
                         {
-                            "path":{ "Fn::Join" : [ "", [ "s3://", {"Ref":"Data_Bucket_Name"}, "/smart_hub_rates_parquet"] ] }
+                            "path":{ "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_rates_parquet"] ] }
                         }
                     ]
-                },
-              "DependsOn":[
-                  "Crawler_IAM_Role",
-                  "Glue_Database",
-                  "Data_Bucket_Name"
-              ]
-            }
+                }
+            },
+            "DependsOn":[
+                "CrawlerIAMRole",
+                "GlueDatabase",
+                "DataBucket"
+            ]
         },
-        "ETL_Temp_Parquet_Crawler":{
+        "ETLTempParquetCrawler":{
             "Type" : "AWS::Glue::Crawler",
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-etl-tmp-parquet",
-                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
                 "SchemaChangePolicy" : {
                     "DeleteBehavior" : "UPDATE IN DATABASE",
                     "UpdateBehavior" : "LOG"
@@ -568,24 +567,24 @@
                 "Targets" : {
                     "CatalogTargets" : [
                         {
-                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
-                            "Tables" : [ { "Ref" : "ETL_Parquet_tmp_Data" } ]
+                            "DatabaseName" : { "Ref" : "GlueDatabaseName" },
+                            "Tables" : [ { "Ref" : "ETLParquettmpData" } ]
                           }
                     ]
-                },
-              "DependsOn":[
-                  "Crawler_IAM_Role",
-                  "Glue_Database",
-                  "Data_Bucket_Name"
-              ]
-            }
+                }
+             },
+            "DependsOn":[
+                "CrawlerIAMRole",
+                "GlueDatabase",
+                "DataBucket"
+            ]
         }, 
-        "ETL_Parquet_Crawler":{
+        "ETLParquetCrawler":{
             "Type" : "AWS::Glue::Crawler",
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-etl-output-parquet",
-                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]},
+                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
                 "SchemaChangePolicy" : {
                     "DeleteBehavior" : "UPDATE IN DATABASE",
                     "UpdateBehavior" : "LOG"
@@ -593,33 +592,33 @@
                 "Targets" : {
                     "CatalogTargets" : [
                         {
-                            "DatabaseName" : { "Ref" : "GlueDatabase_Name" },
+                            "DatabaseName" : { "Ref" : "GlueDatabaseName" },
                             "Tables" : [ "etl_output_parquet"]
                         }
                     ]
-                },
-              "DependsOn":[
-                  "Crawler_IAM_Role",
-                  "Glue_Database",
-                  "Data_Bucket_Name"
-              ]
-            }
+                }
+            },
+            "DependsOn":[
+                "CrawlerIAMRole",
+                "GlueDatabase",
+                "DataBucket"
+            ]
         },
-        "ETL_Glue_Job":{
+        "ETLGlueJob":{
             "Type" : "AWS::Glue::Job",
             "Properties" : {
                 "Command" : {
                     "Name" : "glueetl",
                     "PythonVersion" : 3,
-                    "ScriptLocation" : {"fn::!Sub":["s3://${ScriptBucketName}/Glue_Job/rates_xml_to_parquet.py"]}
+                    "ScriptLocation" : {"Fn::Sub":"s3://${ScriptBucketName}/Glue_Job/rates_xml_to_parquet.py"}
                 },
                 "DefaultArguments":{
-                    "--s3_output_path": {"Fn::Sub" : "s3://${Data_Bucket_Name}/smart_hub_rates_parquet"},
-                    "--source_glue_database": {"!Ref":"Glue_Database"},
+                    "--s3_output_path": {"Fn::Sub" : "s3://${DataBucketName}/smart_hub_rates_parquet"},
+                    "--source_GlueDatabase": {"!Ref":"GlueDatabase"},
                     "--source_glue_table": "smart_hub_rates_xml",
                     "--job-bookmark-option": "job-bookmark-enable",
                     "--enable-spark-ui": "true",
-                    "--spark-event-logs-path": {"Fn::Sub" : "s3://${Log_Bucket_Name}/glue-etl-jobs/"}
+                    "--spark-event-logs-path": {"Fn::Sub" : "s3://${LogBucketName}/glue-etl-jobs/"}
                 },
                 "Description" : "Job to convert electricity rates from xml to parquet",
                 "ExecutionProperty" : {
@@ -628,44 +627,44 @@
                 "GlueVersion" : "1.0",
                 "MaxRetries" : 0,
                 "Name" : "xml-to-parquet-etl-job",
-                "Role" : {"Fn::GetAtt": ["CrawlerRole.Arn"]}
+                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]}
             },
             "DependsOn":[
-                "Crawler_IAM_Role",
-                "Glue_Database",
-                "Data_Bucket_Name",
-                "Script_Bucket_Name",
-                "Log_Bucket_Name"
+                "CrawlerIAMRole",
+                "GlueDatabase",
+                "DataBucket",
+                "ScriptBucket",
+                "logBucket"
             ]
         }
     },
-    "Output":{
+    "Outputs":{
         "DataBucketExport":{
             "Description" : "S3 bucket that holds data files",
-            "Value" : {"Ref":"Data_Bucket_Name"},
+            "Value" : {"Ref":"DataBucketName"},
             "Export" : {
-              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "Data_Bucket"] ] }
+              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "DataBucket"] ] }
             }
         },
         "ScriptBucketExport":{
             "Description" : "S3 bucket that holds Scripts",
-            "Value" : {"Ref":"Script_Bucket_Name"},
+            "Value" : {"Ref":"ScriptBucketName"},
             "Export" : {
-              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "Script_Bucket"] ] }
+              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "ScriptBucket"] ] }
             }
         },
         "LogBucketExport":{
             "Description" : "S3 bucket that store logs",
-            "Value" : {"Ref":"Log_Bucket_Name"},
+            "Value" : {"Ref":"LogBucketName"},
             "Export" : {
-              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "Log_Bucket"] ] }
+              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "logBucket"] ] }
             }
         },
         "GlueDatabaseExport":{
             "Description" : "Glue database",
-            "Value" : {"Ref":"GlueDatabase_Name"},
+            "Value" : {"Ref":"GlueDatabaseName"},
             "Export" : {
-              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "Glue_Database"] ] }
+              "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "GlueDatabase"] ] }
             }
         }
     }

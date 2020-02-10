@@ -7,7 +7,7 @@ LOG_BUCKET="smart-hub-logs-${BUCKET_SUFFIX}"
 aws cloudformation create-stack \
     --stack-name smart-hub-athena-glue-stack \
     --template-body file://./AWS_athena_glue_quicksight_stack_cf.json\
-    --parameters ParameterKey=Data_Bucket_Name,ParameterValue=${DATA_BUCKET} \
-                 ParameterKey=Script_Bucket_Name,ParameterValue=${SCRIPT_BUCKET} \
-                 ParameterKey=Log_Bucket_Name,ParameterValue=${LOG_BUCKET} \
+    --parameters ParameterKey=DataBucketName,ParameterValue=${DATA_BUCKET} \
+                 ParameterKey=ScriptBucketName,ParameterValue=${SCRIPT_BUCKET} \
+                 ParameterKey=LogBucketName,ParameterValue=${LOG_BUCKET} \
     --capabilities CAPABILITY_NAMED_IAM
