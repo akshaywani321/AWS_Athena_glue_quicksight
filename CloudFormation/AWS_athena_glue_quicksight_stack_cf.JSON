@@ -667,6 +667,6 @@
             "Export" : {
               "Name" : { "Fn::Join" : [ "-", [{"Ref":"AWS::StackName"}, "Glue_Database"] ] }
             }
-        },
+        }
     }
 }
