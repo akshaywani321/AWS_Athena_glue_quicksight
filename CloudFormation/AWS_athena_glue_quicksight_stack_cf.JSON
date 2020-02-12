@@ -22,28 +22,32 @@
     },
     "Resources": {
         "DataBucket": {
+            "DependsOn":["IAMManagedPolicy"],
             "Type": "AWS::S3::Bucket",
             "Properties": {
                 "BucketName" : {"Ref":"DataBucketName"}
             }
         },
         "ScriptBucket": {
+            "DependsOn":["IAMManagedPolicy"],
             "Type": "AWS::S3::Bucket",
             "Properties": {
                 "BucketName" : {"Ref":"ScriptBucketName"}
             }
         },
         "logBucket": {
+            "DependsOn":["IAMManagedPolicy"],
             "Type": "AWS::S3::Bucket",
             "Properties": {
                 "BucketName" : {"Ref":"LogBucketName"}
             }
         },
         "GlueDatabase": {
+            "DependsOn":["IAMRole"],
             "Type" : "AWS::Glue::Database",
             "Properties": {
                 "CatalogId": {"Ref":"AWS::AccountId"},
-                "DataBaseInput":{
+                "DatabaseInput":{
                     "Name":{"Ref":"GlueDatabaseName"},
                     "Description":"Glue Catalog to store Metadata"
                 }
@@ -58,7 +62,7 @@
                 "DatabaseName" : {"Ref":"GlueDatabaseName"},
                 "TableInput" : {
                     "Description" : "Glue Table for Usage Data",
-                    "Name" : "smart_hub_UsageData_json",
+                    "Name" : "smart_hub_usagedata_json",
                     "Parameters" : {
                         "classification": "json", 
                         "compressionType": "none" 
@@ -69,34 +73,34 @@
                             "Name" : "dt",
                             "Type" : "date"
                         }
-                    ]
-                },
-                "StorageDescriptor" : {
-                    "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
-                    "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
-                    "Columns":[
-                        {
-                            "Name" : "loc_id",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "ts",
-                            "Type" : "bigint"
-                        },
-                        {
-                            "Name" : "data",
-                            "Type" : "struct<s_01:double,s_02:double,s_03:double,s_04:double,s_05:double,s_06:double,s_07:double,s_08:double,s_09:double,s_10:double>"
-                        }
                     ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_data_json"] ] },
-                    "SerdeInfo":{
-                        "Parameters" : {
-                            "feild.delim":","
-                        },
-                        "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
-                    }
+                    "StorageDescriptor" : {
+                        "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
+                        "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                        "Columns":[
+                            {
+                                "Name" : "loc_id",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "ts",
+                                "Type" : "bigint"
+                            },
+                            {
+                                "Name" : "data",
+                                "Type" : "struct<s_01:double,s_02:double,s_03:double,s_04:double,s_05:double,s_06:double,s_07:double,s_08:double,s_09:double,s_10:double>"
+                            }
+                        ],
+                        "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_data_json"] ] },
+                        "SerdeInfo":{
+                            "Parameters" : {
+                                "feild.delim":","
+                            },
+                            "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
+                        }
 
-                }                    
+                    } 
+                }                   
             }
 
         },
@@ -121,70 +125,70 @@
                             "Name" : "state",
                             "Type" : "string"
                         }
-                    ]
-                },
-                "StorageDescriptor" : {
-                    "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
-                    "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
-                    "Columns":[
-                        {
-                            "Name" : "lon",
-                            "Type" : "double"
-                        },
-                        {
-                            "Name" : "lat",
-                            "Type" : "double"
-                        },
-                        {
-                            "Name" : "number",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "street",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "unit",
-                            "Type" : "int"
-                        },
-                        {
-                            "Name" : "city",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "district",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "region",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "postcode",
-                            "Type" : "int"
-                        },
-                        {
-                            "Name" : "id",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "hash",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "tz",
-                            "Type" : "string"
-                        }
                     ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_sensor_mapping_json"] ] },
-                    "SerdeInfo":{
-                        "Parameters" : {
-                            "feild.delim":","
-                        },
-                        "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
-                    }
+                    "StorageDescriptor" : {
+                        "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
+                        "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                        "Columns":[
+                            {
+                                "Name" : "lon",
+                                "Type" : "double"
+                            },
+                            {
+                                "Name" : "lat",
+                                "Type" : "double"
+                            },
+                            {
+                                "Name" : "number",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "street",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "unit",
+                                "Type" : "int"
+                            },
+                            {
+                                "Name" : "city",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "district",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "region",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "postcode",
+                                "Type" : "int"
+                            },
+                            {
+                                "Name" : "id",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "hash",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "tz",
+                                "Type" : "string"
+                            }
+                        ],
+                        "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_sensor_mapping_json"] ] },
+                        "SerdeInfo":{
+                            "Parameters" : {
+                                "feild.delim":","
+                            },
+                            "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
+                        }
 
-                }                    
+                    } 
+                }                   
             }
 
         },
@@ -208,45 +212,45 @@
                             "Name" : "state",
                             "Type" : "string"
                         }
-                    ]
-                },
-                "StorageDescriptor" : {
-                    "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
-                    "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
-                    "Columns":[
-                        {
-                            "Name" : "loc_id",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "id",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "description",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "location",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "watts",
-                            "Type" : "int"
-                        },
-                        {
-                            "Name" : "last_modified",
-                            "Type" : "int"
-                        }
                     ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_location_csv"] ] },
-                    "SerdeInfo":{
-                        "Parameters" : {
-                            "feild.delim":","
-                        },
-                        "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
-                    }
+                    "StorageDescriptor" : {
+                        "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
+                        "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                        "Columns":[
+                            {
+                                "Name" : "loc_id",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "id",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "description",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "location",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "watts",
+                                "Type" : "int"
+                            },
+                            {
+                                "Name" : "last_modified",
+                                "Type" : "int"
+                            }
+                        ],
+                        "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_location_csv"] ] },
+                        "SerdeInfo":{
+                            "Parameters" : {
+                                "feild.delim":","
+                            },
+                            "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
+                        }
 
+                    }
                 }                    
             }
 
@@ -265,50 +269,50 @@
                         "classification": "xml", 
                         "compressionType": "none" 
                     },
-                    "TableType" : "EXTERNAL TABLE"
-                },
-                "StorageDescriptor" : {
-                    "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
-                    "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
-                    "Columns":[
-                        {
-                            "Name" : "from",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "month",
-                            "Type" : "int"
-                        },
-                        {
-                            "Name" : "rate",
-                            "Type" : "double"
-                        },
-                        {
-                            "Name" : "state",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "to",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "type",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name": "year",
-                            "Type": "string"
+                    "TableType" : "EXTERNAL TABLE",
+                    "StorageDescriptor" : {
+                        "InputFormat" : "org.apache.hadoop.mapred.TextInputFormat",
+                        "OutputFormat":"org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat",
+                        "Columns":[
+                            {
+                                "Name" : "from",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "month",
+                                "Type" : "int"
+                            },
+                            {
+                                "Name" : "rate",
+                                "Type" : "double"
+                            },
+                            {
+                                "Name" : "state",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "to",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "type",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name": "year",
+                                "Type": "string"
+                            }
+                        ],
+                        "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_rates_xml"] ] },
+                        "SerdeInfo":{
+                            "Parameters" : {
+                                "feild.delim":","
+                            },
+                            "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
                         }
-                    ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_rates_xml"] ] },
-                    "SerdeInfo":{
-                        "Parameters" : {
-                            "feild.delim":","
-                        },
-                        "SerializationLibrary" : "org.openx.data.jsonserde.JsonSerDe"
-                    }
 
-                }                    
+                    }   
+                }                 
             }
 
         },
@@ -334,100 +338,121 @@
                             "Name" : "loc_id",
                             "Type" : "string"
                         }
-                    ]
-                },
-                "StorageDescriptor" : {
-                    "InputFormat" : "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
-                    "OutputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
-                    "Columns":[
-                        {
-                            "Name" : "ts",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "device",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "location",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "state",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "type",
-                            "Type" : "string"
-                        },
-                        {
-                            "Name" : "kwh",
-                            "Type" : "double"
-                        },
-                        {
-                            "Name": "cents_per_kwh",
-                            "Type": "double"
-                        },
-                        {
-                            "Name": "cost",
-                            "Type": "double"
-                        },
-                        {
-                            "Name": "state",
-                            "Type": "string"
-                        }
                     ],
-                    "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/etl_tmp_output_parquet"] ] },
-                    "SerdeInfo":{
-                        "SerializationLibrary" : "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
-                    }
+                    "StorageDescriptor" : {
+                        "InputFormat" : "org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat",
+                        "OutputFormat": "org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat",
+                        "Columns":[
+                            {
+                                "Name" : "ts",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "device",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "location",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "state",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "type",
+                                "Type" : "string"
+                            },
+                            {
+                                "Name" : "kwh",
+                                "Type" : "double"
+                            },
+                            {
+                                "Name": "cents_per_kwh",
+                                "Type": "double"
+                            },
+                            {
+                                "Name": "cost",
+                                "Type": "double"
+                            },
+                            {
+                                "Name": "state",
+                                "Type": "string"
+                            }
+                        ],
+                        "Location" : { "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/etl_tmp_output_parquet"] ] },
+                        "SerdeInfo":{
+                            "SerializationLibrary" : "org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe"
+                        }
 
+                    }
                 }                    
             }
 
         },
-        "CrawlerIAMRole":{
-            "Type" : "AWS::IAM::Role",
-            "Properties" : {
-                "Description":"IAM Role for Crawlers",
-                "AssumeRolePolicyDocument" : {
-                    "Version": "2020-02-08",
+        "IAMRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName":"Smart_Hub_Role",
+                "Path":"/",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
                     "Statement": [
                         {
                             "Effect": "Allow",
                             "Principal": {
-                                "Service": [
-                                    "glue.amazonaws.com"
-                                ]
+                                "Service": ["glue.amazonaws.com"]
                             },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": ["arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"],
+                "Policies": [ 
+                    {
+                        "PolicyName" : "smart_hub_policy",
+                        "PolicyDocument" : {
+                            "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Action": [
+                                    "s3:GetObject",
+                                    "s3:PutObject",
+                                    "s3:DeleteObject"
+                                ],
+                                "Effect": "Allow",
+                                "Resource": "*"
+                            }
+                        ]
+                        }
+                    }
+                ]
+            }
+        },
+        "IAMManagedPolicy":{
+            "Type" : "AWS::IAM::ManagedPolicy",
+            "Properties" : {
+                "Description" : "S3 writable",
+                "ManagedPolicyName" : "SmartHubS3Policy",
+                "Path" : "/",
+                "PolicyDocument" : {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Sid": "00002",
+                            "Effect": "Allow",
                             "Action": [
-                                "sts:AssumeRole"
+                                "s3:*",
+                                "iam:*",
+                                "glue:*"
+                            ],
+                            "Resource": [
+                                "*"
                             ]
                         }
                     ]
                 },
-                "ManagedPolicyArns" :["arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole"],
-                "Path" : "/",
-                "Policies" : [
-                    {
-                        "PolicyDocument" : {
-                            "version":"2020-02-08",
-                            "statement":[
-                                {
-                                    "Effect":"allow",
-                                    "Action":[
-                                        "s3:GetObject",
-                                        "s3:PutObject",
-                                        "s3:DeleteObject"
-                                    ],
-                                    "Resource":"*"
-                                }
-                            ]
-                        },
-                        "PolicyName" : "CrawlerIAMPolicy"
-                    }
-                ],
-                "RoleName" : "Smart_Hub_Crawler_Role"
+                "Users" : ["akshay_aws"]
             }
         },
         "LocationCrawler":{
@@ -435,10 +460,10 @@
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-locations-csv",
-                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
+                "Role" : {"Fn::GetAtt": ["IAMRole","Arn"]},
                 "SchemaChangePolicy" : {
-                    "DeleteBehavior" : "UPDATE IN DATABASE",
-                    "UpdateBehavior" : "LOG"
+                    "DeleteBehavior" : "LOG",
+                    "UpdateBehavior" : "UPDATE_IN_DATABASE"
                 },
                 "Targets" : {
                     "CatalogTargets" : [
@@ -450,7 +475,7 @@
                 }
             },
             "DependsOn":[
-                "CrawlerIAMRole",
+                "IAMRole",
                 "GlueDatabase",
                 "DataBucket"
             ]
@@ -460,10 +485,10 @@
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-sensor-mappings-json",
-                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
+                "Role" : {"Fn::GetAtt": ["IAMRole","Arn"]},
                 "SchemaChangePolicy" : {
-                    "DeleteBehavior" : "UPDATE IN DATABASE",
-                    "UpdateBehavior" : "LOG"
+                    "DeleteBehavior" : "LOG",
+                    "UpdateBehavior" : "UPDATE_IN_DATABASE"
                 },
                 "Targets" : {
                     "CatalogTargets" : [
@@ -475,7 +500,7 @@
                 }
             },
             "DependsOn":[
-                "CrawlerIAMRole",
+                "IAMRole",
                 "GlueDatabase",
                 "DataBucket"
             ]
@@ -485,10 +510,10 @@
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-usage-data-json",
-                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
+                "Role" : {"Fn::GetAtt": ["IAMRole","Arn"]},
                 "SchemaChangePolicy" : {
-                    "DeleteBehavior" : "UPDATE IN DATABASE",
-                    "UpdateBehavior" : "LOG"
+                    "DeleteBehavior" : "LOG",
+                    "UpdateBehavior" : "UPDATE_IN_DATABASE"
                 },
                 "Targets" : {
                     "CatalogTargets" : [
@@ -500,7 +525,7 @@
                 }
             },
             "DependsOn":[
-                "CrawlerIAMRole",
+                "IAMRole",
                 "GlueDatabase",
                 "DataBucket"
             ]
@@ -510,10 +535,10 @@
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-rates-data-json",
-                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
+                "Role" : {"Fn::GetAtt": ["IAMRole","Arn"]},
                 "SchemaChangePolicy" : {
-                    "DeleteBehavior" : "UPDATE IN DATABASE",
-                    "UpdateBehavior" : "LOG"
+                    "DeleteBehavior" : "LOG",
+                    "UpdateBehavior" : "UPDATE_IN_DATABASE"
                 },
                 "Targets" : {
                     "CatalogTargets" : [
@@ -525,7 +550,7 @@
                 }
             },
             "DependsOn":[
-                "CrawlerIAMRole",
+                "IAMRole",
                 "GlueDatabase",
                 "DataBucket"
             ]
@@ -533,23 +558,20 @@
         "RatesParquetCrawler":{
             "Type" : "AWS::Glue::Crawler",
             "Properties" : {
+                "DatabaseName" : { "Ref" : "GlueDatabaseName" },
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-rates-parquet",
-                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
+                "Role" : {"Fn::GetAtt": ["IAMRole","Arn"]},
                 "SchemaChangePolicy" : {
-                    "DeleteBehavior" : "UPDATE IN DATABASE",
-                    "UpdateBehavior" : "LOG"
+                    "DeleteBehavior" : "LOG",
+                    "UpdateBehavior" : "UPDATE_IN_DATABASE"
                 },
                 "Targets" : {
-                    "S3Targets" : [
-                        {
-                            "path":{ "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_rates_parquet"] ] }
-                        }
-                    ]
+                    "S3Targets" :[{"Path":{ "Fn::Join" : [ "", [ "s3://", {"Ref":"DataBucketName"}, "/smart_hub_rates_parquet"] ] }}]
                 }
             },
             "DependsOn":[
-                "CrawlerIAMRole",
+                "IAMRole",
                 "GlueDatabase",
                 "DataBucket"
             ]
@@ -559,10 +581,10 @@
             "Properties" : {
                 "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
                 "Name" : "smart-hub-etl-tmp-parquet",
-                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
+                "Role" : {"Fn::GetAtt": ["IAMRole","Arn"]},
                 "SchemaChangePolicy" : {
-                    "DeleteBehavior" : "UPDATE IN DATABASE",
-                    "UpdateBehavior" : "LOG"
+                    "DeleteBehavior" : "LOG",
+                    "UpdateBehavior" : "UPDATE_IN_DATABASE"
                 },
                 "Targets" : {
                     "CatalogTargets" : [
@@ -574,32 +596,7 @@
                 }
              },
             "DependsOn":[
-                "CrawlerIAMRole",
-                "GlueDatabase",
-                "DataBucket"
-            ]
-        }, 
-        "ETLParquetCrawler":{
-            "Type" : "AWS::Glue::Crawler",
-            "Properties" : {
-                "Configuration" : "{\"Version\":1.0,\"CrawlerOutput\":{\"Partitions\":{\"AddOrUpdateBehavior\":\"InheritFromTable\"},\"Tables\":{\"AddOrUpdateBehavior\":\"MergeNewColumns\"}}}",
-                "Name" : "smart-hub-etl-output-parquet",
-                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]},
-                "SchemaChangePolicy" : {
-                    "DeleteBehavior" : "UPDATE IN DATABASE",
-                    "UpdateBehavior" : "LOG"
-                },
-                "Targets" : {
-                    "CatalogTargets" : [
-                        {
-                            "DatabaseName" : { "Ref" : "GlueDatabaseName" },
-                            "Tables" : [ "etl_output_parquet"]
-                        }
-                    ]
-                }
-            },
-            "DependsOn":[
-                "CrawlerIAMRole",
+                "IAMRole",
                 "GlueDatabase",
                 "DataBucket"
             ]
@@ -614,7 +611,7 @@
                 },
                 "DefaultArguments":{
                     "--s3_output_path": {"Fn::Sub" : "s3://${DataBucketName}/smart_hub_rates_parquet"},
-                    "--source_GlueDatabase": {"!Ref":"GlueDatabase"},
+                    "--source_GlueDatabase": {"Ref":"GlueDatabase"},
                     "--source_glue_table": "smart_hub_rates_xml",
                     "--job-bookmark-option": "job-bookmark-enable",
                     "--enable-spark-ui": "true",
@@ -627,10 +624,10 @@
                 "GlueVersion" : "1.0",
                 "MaxRetries" : 0,
                 "Name" : "xml-to-parquet-etl-job",
-                "Role" : {"Fn::GetAtt": ["CrawlerIAMRole","Arn"]}
+                "Role" : {"Fn::GetAtt": ["IAMRole","Arn"]}
             },
             "DependsOn":[
-                "CrawlerIAMRole",
+                "IAMRole",
                 "GlueDatabase",
                 "DataBucket",
                 "ScriptBucket",
