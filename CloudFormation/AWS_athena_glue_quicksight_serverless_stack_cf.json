@@ -1,0 +1,154 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description":"Serverless Stack for Smart hub App",
+    "Parameters":{
+        "SmartHubStackName":{
+            "Description": "Name of cloudformation serverless stack for smart hub",
+            "Type": "String",
+            "Default":"smart-hub-application-stack"
+        }
+    },
+    "Resources":{
+        "LambdaExecutionIAMRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName":"Smart_Hub_Role",
+                "Path":"/",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": ["lambda.amazonaws.com"]
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                    "arn:aws:iam::aws:policy/AmazonAthenaFullAccess",
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                ],
+                "Policies": [ 
+                    {
+                        "PolicyName" : "smart_hub_log_policy",
+                        "PolicyDocument" : {
+                            "Version": "2012-10-17",
+                        "Statement": [
+                            {
+                                "Action": [
+                                    "logs:*"
+                                ],
+                                "Effect": "Allow",
+                                "Resource": "arn:aws:logs:*:*:*"
+                            }
+                        ]
+                        }
+                    }
+                ]
+            }
+        },
+        "AthenaUsageJSONtoParquetDataFunction":{
+            "Type":"AWS::Lambda::Function",
+            "Properties":{
+                "Description":"Lambda function to convert usage JSON data to Parquet",
+                "FunctionName":"athena-usage-json-to-parquet-data",
+                "Handler":"index.handler",
+                "Code":{
+                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
+                    "S3Key":"Lambda/athena_usage_json_to_parquet/package.zip"
+                },
+                "Runtime":"python3.8",
+                "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
+                "Environment":{
+                    "Variables":{
+                        "DATA_CATALOG":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"GlueDatabase"} ] ]}},
+                        "DATA_BUCKET":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"DataBucket"} ] ]}}
+                    }
+                }
+            }
+        },
+        "AthenaLocationCSVtoParquetDataFunction":{
+            "Type":"AWS::Lambda::Function",
+            "Properties":{
+                "Description":"Lambda function to convert Location CSV data to Parquet",
+                "FunctionName":"athena-location-csv-to-parquet-data",
+                "Handler":"index.handler",
+                "Code":{
+                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
+                    "S3Key":"Lambda/athena_location_csv_to_parquet/package.zip"
+                },
+                "Runtime":"python3.8",
+                "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
+                "Environment":{
+                    "Variables":{
+                        "DATA_CATALOG":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"GlueDatabase"} ] ]}},
+                        "DATA_BUCKET":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"DataBucket"} ] ]}}
+                    }
+                }
+            }
+        },
+        "AthenaMaappingJSONtoParquetDataFunction":{
+            "Type":"AWS::Lambda::Function",
+            "Properties":{
+                "Description":"Lambda function to convert Mapping JSON data to Parquet",
+                "FunctionName":"athena-mapping-json-to-parquet-data",
+                "Handler":"index.handler",
+                "Code":{
+                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
+                    "S3Key":"Lambda/athena_mapping_json_to_parquet/package.zip"
+                },
+                "Runtime":"python3.8",
+                "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
+                "Environment":{
+                    "Variables":{
+                        "DATA_CATALOG":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"GlueDatabase"} ] ]}},
+                        "DATA_BUCKET":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"DataBucket"} ] ]}}
+                    }
+                }
+            }
+        },
+        "AthenaMappingJSONtoParquetDataFunction":{
+            "Type":"AWS::Lambda::Function",
+            "Properties":{
+                "Description":"Lambda function to convert Mapping JSON data to Parquet",
+                "FunctionName":"athena-mapping-json-to-parquet-data",
+                "Handler":"index.handler",
+                "Code":{
+                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
+                    "S3Key":"Lambda/athena_mapping_json_to_parquet/package.zip"
+                },
+                "Runtime":"python3.8",
+                "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
+                "Environment":{
+                    "Variables":{
+                        "DATA_CATALOG":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"GlueDatabase"} ] ]}},
+                        "DATA_BUCKET":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"DataBucket"} ] ]}}
+                    }
+                }
+            }
+        },
+        "AthenaETLQueryFunction":{
+            "Type":"AWS::Lambda::Function",
+            "Properties":{
+                "Description":"Lambda function to Execute ETL query",
+                "FunctionName":"athena-ETL-query-01",
+                "Handler":"index.handler",
+                "Code":{
+                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
+                    "S3Key":"Lambda/athena_ETL_query_01/package.zip"
+                },
+                "Runtime":"python3.8",
+                "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
+                "Environment":{
+                    "Variables":{
+                        "DATA_CATALOG":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"GlueDatabase"} ] ]}},
+                        "DATA_BUCKET":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, {"Ref":"DataBucket"} ] ]}}
+                    }
+                }
+            }
+        }
+    }
+}
