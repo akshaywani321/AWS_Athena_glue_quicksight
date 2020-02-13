@@ -56,10 +56,6 @@
                 "Description":"Lambda function to convert usage JSON data to Parquet",
                 "FunctionName":"athena-usage-json-to-parquet-data",
                 "Handler":"index.handler",
-                "Code":{
-                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
-                    "S3Key":"Lambda/athena_usage_json_to_parquet/package.zip"
-                },
                 "Runtime":"python3.8",
                 "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
                 "Environment":{
@@ -76,10 +72,6 @@
                 "Description":"Lambda function to convert Location CSV data to Parquet",
                 "FunctionName":"athena-location-csv-to-parquet-data",
                 "Handler":"index.handler",
-                "Code":{
-                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
-                    "S3Key":"Lambda/athena_location_csv_to_parquet/package.zip"
-                },
                 "Runtime":"python3.8",
                 "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
                 "Environment":{
@@ -96,10 +88,6 @@
                 "Description":"Lambda function to convert Mapping JSON data to Parquet",
                 "FunctionName":"athena-mapping-json-to-parquet-data",
                 "Handler":"index.handler",
-                "Code":{
-                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
-                    "S3Key":"Lambda/athena_mapping_json_to_parquet/package.zip"
-                },
                 "Runtime":"python3.8",
                 "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
                 "Environment":{
@@ -116,10 +104,6 @@
                 "Description":"Lambda function to convert Mapping JSON data to Parquet",
                 "FunctionName":"athena-mapping-json-to-parquet-data",
                 "Handler":"index.handler",
-                "Code":{
-                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
-                    "S3Key":"Lambda/athena_mapping_json_to_parquet/package.zip"
-                },
                 "Runtime":"python3.8",
                 "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
                 "Environment":{
@@ -136,10 +120,6 @@
                 "Description":"Lambda function to Execute ETL query",
                 "FunctionName":"athena-ETL-query-01",
                 "Handler":"index.handler",
-                "Code":{
-                    "S3Bucket":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "AthenaGlueStackName"}, "ScriptBucket" ] ]}},
-                    "S3Key":"Lambda/athena_ETL_query_01/package.zip"
-                },
                 "Runtime":"python3.8",
                 "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
                 "Environment":{
