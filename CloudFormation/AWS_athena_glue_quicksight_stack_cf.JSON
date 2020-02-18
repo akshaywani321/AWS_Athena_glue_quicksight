@@ -649,7 +649,7 @@
                         "Ref": "SecurityGroupforJenkins"
                     }
                 ],
-                "ImageId": "ami-0ff8a91507f77f867",
+                "ImageId": "ami-02e98f78",
                 "InstanceType": "t2.micro",
                 "IamInstanceProfile": {
                     "Ref": "myInstanceProfile"
@@ -663,19 +663,48 @@
                             "\n",
                             [
                                 "#!/bin/bash -xe",
-                                "sudo remove java-1.7.0-openjdk -y",
-                                "sudo yum install java-1.8.0 -y",
-                                "sudo yum update –y",
-                                "sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo",
-                                "sudo rpm — import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key",
-                                "sudo yum install jenkins -y",
-                                "systemctl start jenkins.service",
-                                "systemctl enable jenkins.service"
+                                "pwd >> /var/log/SomeFile.txt",
+                                "sudo yum remove java-1.7.0-openjdk -y 2>&1 >> /var/log/SomeFile.txt",
+                                "sudo yum install java-1.8.0 -y 2>&1 >> /var/log/SomeFile.txt",
+                                "sudo export JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk-1.8.0.242.b08-0.el7_7.x86_64",
+                                "sudo export PATH=$PATH:$JAVA_HOME",
+                                "sudo yum update –y 2>&1 >> /var/log/SomeFile.txt",
+                                "sudo yum -y install wget 2>&1 >> /var/log/SomeFile.txt",
+                                "sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo 2>&1 >> /var/log/SomeFile.txt",
+                                "sudo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key 2>&1 >> /var/log/SomeFile.txt",
+                                "sudo yum install jenkins -y 2>&1 >> /var/log/SomeFile.txt",
+                                "sudo service jenkins start",
+                                "sudo chkconfig jenkins on"
                             ]
                         ]
                     }
                 }
 
+            }
+        },
+        "NewVolume": {
+            "Type": "AWS::EC2::Volume",
+            "Properties": {
+                "Size": "20",
+                "AvailabilityZone": {
+                    "Fn::GetAtt": [
+                        "EC2Instance",
+                        "AvailabilityZone"
+                    ]
+                },
+                "VolumeType": "gp2"
+            }
+        },
+        "MountPoint": {
+            "Type": "AWS::EC2::VolumeAttachment",
+            "Properties": {
+                "InstanceId": {
+                    "Ref": "EC2Instance"
+                },
+                "VolumeId": {
+                    "Ref": "NewVolume"
+                },
+                "Device": "/dev/sdh"
             }
         },
         "myInstanceProfile": {
