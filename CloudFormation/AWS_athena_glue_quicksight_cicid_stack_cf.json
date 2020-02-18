@@ -1,0 +1,69 @@
+{
+    "AWSTemplateFormatVersion":"2010-09-09",
+    "Description":"AWS CI/CD CloudFormation Template.",
+    "Resources": {
+        "myEC2Role": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "myec2role",
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ec2.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "ManagedPolicyArns": [
+                ]
+            }
+        },
+        "myCodeDeployEC2S3Policy": {
+            "Type": "AWS::IAM::ManagedPolicy",
+            "DependsOn": "myEC2Role",
+            "Properties": {
+                "ManagedPolicyName": "CodeDeploy-EC2-S3",
+                "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Action": [
+                                "s3:Get*",
+                                "s3:List*",
+                                "s3:Put*",
+                                "lambda:UpdateFunctionCode",
+                                "lambda:PublishVersion",
+                                "lambda:UpdateAlias"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": "*"
+                        }
+                    ]
+                },
+                "Roles": [
+                    "myEC2Role"
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "EC2IAMRole": {
+            
+            "Value": {
+                "Ref": "myEC2Role"
+            },
+            "Export": {
+                "Name": "ec2iamrole"
+            }
+
+        }
+    }
+}

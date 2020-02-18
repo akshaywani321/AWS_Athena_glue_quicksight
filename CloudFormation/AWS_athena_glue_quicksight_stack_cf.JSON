@@ -18,6 +18,10 @@
             "Description": "Name of S3 bucket to store data",
             "Type": "String",
             "Default":"smart_hub_data_catalog"
+        },
+        "KeyName": {
+            "Description": "Key name for EC2",
+            "Type": "String"
         }
     },
     "Resources": {
@@ -444,7 +448,8 @@
                             "Action": [
                                 "s3:*",
                                 "iam:*",
-                                "glue:*"
+                                "glue:*",
+                                "ec2:*"
                             ],
                             "Resource": [
                                 "*"
@@ -633,6 +638,83 @@
                 "ScriptBucket",
                 "logBucket"
             ]
+        },
+        "EC2Instance": {
+            "DependsOn": "SecurityGroupforJenkins",
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1c",
+                "SecurityGroupIds": [
+                    {
+                        "Ref": "SecurityGroupforJenkins"
+                    }
+                ],
+                "ImageId": "ami-0ff8a91507f77f867",
+                "InstanceType": "t2.micro",
+                "IamInstanceProfile": {
+                    "Ref": "myInstanceProfile"
+                },
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
+                "UserData": {
+                    "Fn::Base64": {
+                        "Fn::Join": [
+                            "\n",
+                            [
+                                "#!/bin/bash -xe",
+                                "sudo remove java-1.7.0-openjdk -y",
+                                "sudo yum install java-1.8.0 -y",
+                                "sudo yum update –y",
+                                "sudo wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat/jenkins.repo",
+                                "sudo rpm — import http://pkg.jenkins-ci.org/redhat/jenkins-ci.org.key",
+                                "sudo yum install jenkins -y",
+                                "systemctl start jenkins.service",
+                                "systemctl enable jenkins.service"
+                            ]
+                        ]
+                    }
+                }
+
+            }
+        },
+        "myInstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Roles": [
+                    {
+                        "Fn::ImportValue": "ec2iamrole"
+                    }
+                ],
+                "InstanceProfileName": "myProfile"
+            }
+        },
+        "SecurityGroupforJenkins": {
+            "DependsOn":"IAMManagedPolicy",
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "Allow http",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "jenkinsEC2_security"
+                    }
+                ],
+                "SecurityGroupIngress": [
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 22,
+                        "ToPort": 22,
+                        "CidrIp": "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol": "tcp",
+                        "FromPort": 8080,
+                        "ToPort": 8080,
+                        "CidrIp": "0.0.0.0/0"
+                    }
+                ]
+            }
         }
     },
     "Outputs":{
