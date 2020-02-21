@@ -1,3 +1,45 @@
+if ( checkFolderForDiffs('Lambda/') ) {
+    node('slaves'){
+        stage('Checkout'){
+            checkout([ 
+                $class: 'GitSCM', 
+                branches: [[name: '*/master']], 
+                doGenerateSubmoduleConfigurations: false, 
+                extensions:[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: '/Lambda']]]], 
+                submoduleCfg: [], 
+                userRemoteConfigs: [[credentialsId: '<gitCredentials>', 
+                url: '<gitRepoURL>'
+                ]] 
+            ])
+
+        }
+
+        stage('Test'){
+            sh 'go get -u github.com/golang/lint/golint'
+            sh 'go get -t ./...'
+            sh 'golint -set_exit_status'
+            sh 'go vet .'
+            sh 'go test .'
+        }
+
+        stage('Build'){
+            sh 'GOOS=linux go build -o main main.go'
+            sh "zip ${commitID()}.zip main"
+        }
+
+        stage('Push'){
+            sh "aws s3 cp ${commitID()}.zip s3://${bucket}"
+        }
+
+        stage('Deploy'){
+            sh "aws lambda update-function-code --function-name ${functionName} \
+                    --s3-bucket ${bucket} \
+                    --s3-key ${commitID()}.zip \
+                    --region ${region}"
+        }
+    }
+}
+
 def checkFolderForDiffs(path) {
     try {
         sh "git diff --quiet --exit-code HEAD~1..HEAD ${path}"
@@ -12,9 +54,8 @@ def commitID() {
     sh 'rm /var/log/commitID'
     commitID
 }
-if ( checkFolderForDiffs('Lambda/') ) {
-    
+
+
+checkout([ $class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'CleanCheckout'], [$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: '/directory/path/here']]]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: '<gitCredentials>', url: '<gitRepoURL>']] ])
     sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> /var/log/change.txt"
     def commitedfiles = readFile('/var/log/changeset').split('\n')
-
-}
