@@ -1,0 +1,6 @@
+.DS_Store
+Lambda/athena-complex-etl-query/index.py
+Lambda/athena-csv-to-parquet-locations/index.py
+Lambda/athena-json-to-parquet-data/index.py
+Lambda/athena-json-to-parquet-mappings/index.py
+Lambda/athena-parquet-to-parquet-elt-data/index.py

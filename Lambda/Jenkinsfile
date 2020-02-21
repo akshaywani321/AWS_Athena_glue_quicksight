@@ -1,0 +1,20 @@
+def checkFolderForDiffs(path) {
+    try {
+        sh "git diff --quiet --exit-code HEAD~1..HEAD ${path}"
+        return false
+    } catch (err) {
+        return true
+    }
+}
+def commitID() {
+    sh 'git rev-parse HEAD > /var/log/commitID'
+    def commitID = readFile('/var/log/commitID').trim()
+    sh 'rm /var/log/commitID'
+    commitID
+}
+if ( checkFolderForDiffs('Lambda/') ) {
+    
+    sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> /var/log/change.txt"
+    def commitedfiles = readFile('/var/log/changeset').split('\n')
+
+}
