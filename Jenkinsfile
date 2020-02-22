@@ -3,7 +3,6 @@ def commitedfiles =[]
 if (checkFolderForDiffs('Lambda/')) {
 pipeline {
     agent any
-    node('slaves'){
         stage('Checkout'){
             checkout([$class: 'GitSCM', 
                 branches: [[name: '*/master']], 
@@ -46,7 +45,6 @@ pipeline {
                     --region ${region}"
         }
     }
-}
 }
 
 def checkFolderForDiffs(path) {
