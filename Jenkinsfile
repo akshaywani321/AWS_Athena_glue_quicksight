@@ -48,9 +48,9 @@ def checkFolderForDiffs(path) {
     }
 }
 def commitID() {
-    sh 'git rev-parse HEAD > /var/log/commitID'
-    def commitID = readFile('/var/log/commitID').trim()
-    sh 'rm /var/log/commitID'
+    sh 'git rev-parse HEAD > .git/commitID'
+    def commitID = readFile('.git/commitID').trim()
+    sh 'rm .git/commitID'
     commitID
 }
 
