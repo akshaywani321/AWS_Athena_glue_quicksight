@@ -8,22 +8,22 @@ if (checkFolderForDiffs('Lambda/')) {
                 doGenerateSubmoduleConfigurations: false, 
                 extensions:[[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: '/Lambda']]]], 
                 submoduleCfg: [], 
-                userRemoteConfigs: [[credentialsId: '<gitCredentials>', url: '<gitRepoURL>']] 
+                userRemoteConfigs: scm.userRemoteConfigs 
             ])
         }
         stage('Initialise')
         {
-            sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> /var/log/changeset"
-            commitedfiles = readFile('/var/log/changeset').split('\n')
+            sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> .git/changeset"
+            commitedfiles = readFile('.git/changeset').split('\n')
             for (item in commitedfiles) {
                 String second = item.split("/")[1]
                 lambdafunc.push("${second}")
             }
-            sh 'rm /var/log/changeset' 
+            sh 'rm .git/changeset' 
         }
         stage('Build'){
             lambdafunc.forEach {
-                sh "zip ${it}-${commitID()}.zip ./${it}/index.py"
+                sh "zip ${it}-${commitID()}.zip .git/${it}/index.py"
             } 
         }
         stage('Push'){
