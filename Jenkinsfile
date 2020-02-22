@@ -1,22 +1,19 @@
-if ( checkFolderForDiffs('Lambda/') ) {
+def lambdafunc=[]
+if (checkFolderForDiffs('Lambda/')) {
     node('slaves'){
         stage('Checkout'){
-            checkout([ 
-                $class: 'GitSCM', 
+            checkout([$class: 'GitSCM', 
                 branches: [[name: '*/master']], 
                 doGenerateSubmoduleConfigurations: false, 
-                extensions:[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: '/Lambda']]]], 
+                extensions:[[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: '/Lambda']]]], 
                 submoduleCfg: [], 
-                userRemoteConfigs: [[credentialsId: '<gitCredentials>', 
-                url: '<gitRepoURL>'
-                ]] 
+                userRemoteConfigs: [[credentialsId: '<gitCredentials>', url: '<gitRepoURL>']] 
             ])
         }
         stage('Initialise')
         {
             sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> /var/log/changeset"
             commitedfiles = readFile('/var/log/changeset').split('\n')
-            lambdafunc=[]
             for(int i = 0;i<commitedfiles.size;i++) {
                 lambdafunc.add(commitedfiles.tokenize("/")[1]​)
             }
