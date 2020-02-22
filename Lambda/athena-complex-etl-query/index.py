@@ -87,5 +87,4 @@ def athena_query(args: Dict[str, str]):
             },
             WorkGroup='primary'
         )
-
         logger.info(response)
