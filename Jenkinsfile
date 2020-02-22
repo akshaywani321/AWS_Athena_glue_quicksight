@@ -1,4 +1,5 @@
 def lambdafunc=[]
+def commitedfiles =[]
 if (checkFolderForDiffs('Lambda/')) {
     node('slaves'){
         stage('Checkout'){
@@ -14,8 +15,8 @@ if (checkFolderForDiffs('Lambda/')) {
         {
             sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> /var/log/changeset"
             commitedfiles = readFile('/var/log/changeset').split('\n')
-            commitedfiles.each {
-                lambdafunc.push(commitedfiles[i].tokenize("/")[1]​)
+            for (item in commitedfiles) {
+                lambdafunc.push(item.split("/")[1]​)
             }
             sh 'rm /var/log/changeset' 
         }
