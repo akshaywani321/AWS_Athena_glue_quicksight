@@ -1,7 +1,7 @@
 def lambdafunc=[]
 def commitedfiles =[]
 node{
-    if (checkFolderForDiffs('Lambda/')) {
+    if (checkFolderForDiffs('/Lambda')) {
     stage('Checkout'){
         checkout([$class: 'GitSCM', 
             branches: [[name: '*/master']], 
@@ -12,9 +12,9 @@ node{
         ])
     }
     stage('Initialise')
-    {
+    {   
         sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> .git/changeset"
-        commitedfiles = readFile('.git/changeset').split('\n')
+        String [] commitedfiles = readFile('.git/changeset').split('\n')
         for (item in commitedfiles) {
             String second = item.split("/")[1]
             lambdafunc.push("${second}")
