@@ -1,6 +1,8 @@
 def lambdafunc=[]
 def commitedfiles =[]
 if (checkFolderForDiffs('Lambda/')) {
+pipeline {
+    agent any
     node('slaves'){
         stage('Checkout'){
             checkout([$class: 'GitSCM', 
@@ -45,6 +47,7 @@ if (checkFolderForDiffs('Lambda/')) {
         }
     }
 }
+}
 
 def checkFolderForDiffs(path) {
     try {
@@ -60,4 +63,5 @@ def commitID() {
     sh 'rm /var/log/commitID'
     commitID
 }
+
 
