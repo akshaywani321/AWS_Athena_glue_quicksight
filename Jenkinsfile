@@ -14,7 +14,10 @@ node{
     stage('Initialise')
     {   
         sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> .git/changeset"
-        String [] commitedfiles = readFile('.git/changeset').split('\n')
+        def lines = readFile('.git/changeset').readLines()
+        lines.each { String line ->
+        commitedfiles.add(line.trim())   
+        }
         for (item in commitedfiles) {
             String second = item.split("/")[1]
             lambdafunc.push("${second}")
