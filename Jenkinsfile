@@ -12,14 +12,23 @@ if ( checkFolderForDiffs('Lambda/') ) {
                 ]] 
             ])
         }
+        stage('Initialise')
+        {
+            sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> /var/log/changeset"
+            commitedfiles = readFile('/var/log/changeset').split('\n')
+            lambdafunc=[]
+            for(int i = 0;i<commitedfiles.size;i++) {
+                lambdafunc.add(commitedfiles.tokenize("/")[1]​)
+            }
+            sh 'rm /var/log/changeset' 
+        }
         stage('Build'){
             steps {
                 script {
                     lambdafunc.forEach {
                         stage (${it}) {
                             timestamps{
-                                sh 'GOOS=linux go build -o main main.go'
-                                sh "zip ${commitID()}.zip main"
+                                sh "zip ${it}-${commitID()}.zip ./${it}/index.py"
                             }
                         }
                     }
@@ -51,16 +60,5 @@ def commitID() {
     def commitID = readFile('/var/log/commitID').trim()
     sh 'rm /var/log/commitID'
     commitID
-}
-
-def getUpdateList(commitid){
-    sh "git diff-tree --no-commit-id --name-only -r ${commitid} >> /var/log/changeset"
-    def commitedfiles = readFile('/var/log/changeset').split('\n')
-    def lambdafunc=[]
-    for(int i = 0;i<commitedfiles.size;i++) {
-        lambdafunc.add(commitedfiles.tokenize("/")[1]​)
-    }
-    sh 'rm /var/log/changeset'
-    lambdafunc
 }
 
