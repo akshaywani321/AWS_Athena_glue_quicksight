@@ -16,7 +16,7 @@ if (checkFolderForDiffs('Lambda/')) {
             sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> /var/log/changeset"
             commitedfiles = readFile('/var/log/changeset').split('\n')
             for (item in commitedfiles) {
-                String second = item.split("/")[1] as String​
+                String second = item.split("/")[1]
                 lambdafunc.push("${second}")
             }
             sh 'rm /var/log/changeset' 
