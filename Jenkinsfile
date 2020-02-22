@@ -1,8 +1,7 @@
 def lambdafunc=[]
 def commitedfiles =[]
 if (checkFolderForDiffs('Lambda/')) {
-    pipeline {
-    agent any
+    pipeline{
         stages{
             stage('Checkout'){
                 checkout([$class: 'GitSCM', 
@@ -24,17 +23,9 @@ if (checkFolderForDiffs('Lambda/')) {
                 sh 'rm /var/log/changeset' 
             }
             stage('Build'){
-                steps {
-                    script {
-                        lambdafunc.forEach {
-                            stage (it) {
-                                timestamps{
-                                    sh "zip ${it}-${commitID()}.zip ./${it}/index.py"
-                                }
-                            }
-                        }
-                    }
-                }
+                lambdafunc.forEach {
+                    sh "zip ${it}-${commitID()}.zip ./${it}/index.py"
+                } 
             }
             stage('Push'){
                 sh "aws s3 cp ${commitID()}.zip s3://${bucket}"
