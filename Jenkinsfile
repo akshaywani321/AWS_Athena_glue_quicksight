@@ -16,7 +16,7 @@ if (checkFolderForDiffs('Lambda/')) {
             sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> /var/log/changeset"
             commitedfiles = readFile('/var/log/changeset').split('\n')
             for (item in commitedfiles) {
-                lambdafunc.push(item.split("/")[1]​)
+                lambdafunc.push(item.split("/")[1] as String​)
             }
             sh 'rm /var/log/changeset' 
         }
@@ -24,7 +24,7 @@ if (checkFolderForDiffs('Lambda/')) {
             steps {
                 script {
                     lambdafunc.forEach {
-                        stage (${it}) {
+                        stage (it) {
                             timestamps{
                                 sh "zip ${it}-${commitID()}.zip ./${it}/index.py"
                             }
