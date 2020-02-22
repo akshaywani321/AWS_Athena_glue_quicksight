@@ -1,42 +1,43 @@
 def lambdafunc=[]
 def commitedfiles =[]
-if (checkFolderForDiffs('Lambda/')) {
-    node{
-        stage('Checkout'){
-            checkout([$class: 'GitSCM', 
-                branches: [[name: '*/master']], 
-                doGenerateSubmoduleConfigurations: false, 
-                extensions:[[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: '/Lambda']]]], 
-                submoduleCfg: [], 
-                userRemoteConfigs: scm.userRemoteConfigs 
-            ])
+node{
+    if (checkFolderForDiffs('Lambda/')) {
+    stage('Checkout'){
+        checkout([$class: 'GitSCM', 
+            branches: [[name: '*/master']], 
+            doGenerateSubmoduleConfigurations: false, 
+            extensions:[[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: '/Lambda']]]], 
+            submoduleCfg: [], 
+            userRemoteConfigs: scm.userRemoteConfigs 
+        ])
+    }
+    stage('Initialise')
+    {
+        sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> .git/changeset"
+        commitedfiles = readFile('.git/changeset').split('\n')
+        for (item in commitedfiles) {
+            String second = item.split("/")[1]
+            lambdafunc.push("${second}")
         }
-        stage('Initialise')
-        {
-            sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> .git/changeset"
-            commitedfiles = readFile('.git/changeset').split('\n')
-            for (item in commitedfiles) {
-                String second = item.split("/")[1]
-                lambdafunc.push("${second}")
-            }
-            sh 'rm .git/changeset' 
-        }
-        stage('Build'){
-            lambdafunc.forEach {
-                sh "zip ${it}-${commitID()}.zip .git/${it}/index.py"
-            } 
-        }
-        stage('Push'){
-            sh "aws s3 cp ${commitID()}.zip s3://${bucket}"
-        }
-        stage('Deploy'){
-            sh "aws lambda update-function-code --function-name ${functionName} \
-                    --s3-bucket ${bucket} \
-                    --s3-key ${commitID()}.zip \
-                    --region ${region}"
-        }
+        sh 'rm .git/changeset' 
+    }
+    stage('Build'){
+        lambdafunc.forEach {
+            sh "zip ${it}-${commitID()}.zip .git/${it}/index.py"
+        } 
+    }
+    stage('Push'){
+        sh "aws s3 cp ${commitID()}.zip s3://${bucket}"
+    }
+    stage('Deploy'){
+        sh "aws lambda update-function-code --function-name ${functionName} \
+                --s3-bucket ${bucket} \
+                --s3-key ${commitID()}.zip \
+                --region ${region}"
+    }
     }
 }
+
 
 
 def checkFolderForDiffs(path) {
