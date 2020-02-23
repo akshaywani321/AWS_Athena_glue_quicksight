@@ -7,7 +7,7 @@ node{
         checkout([$class: 'GitSCM', 
             branches: [[name: '*/master']], 
             doGenerateSubmoduleConfigurations: false, 
-            extensions:[[$class: 'CleanBeforeCheckout'],[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: '/Lambda']]]], 
+            extensions:[[$class: 'CleanCheckout'],[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: '/Lambda']]]], 
             submoduleCfg: [], 
             userRemoteConfigs: scm.userRemoteConfigs 
         ])
@@ -27,14 +27,12 @@ node{
     }
     stage('Build'){
         lambdafunc.each {
-            sh "cd Lambda/${it}"
-            sh "zip -r function.zip index.py"
+            sh "zip -j Lambda/${it}/function.zip Lambda/${it}/index.py"
         } 
     }
     stage('Push'){
         lambdafunc.each {
-            sh "cd Lambda/${it}"
-            sh "aws s3 cp function.zip s3://${bucket}/${it}/"
+            sh "aws s3 cp Lambda/${it}/function.zip s3://${bucket}/${it}/"
         }
     }
     stage('Deploy'){
