@@ -14,9 +14,11 @@ node{
     {   
         sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> .git/changeset"
         def lines = readFile('.git/changeset').readLines()
-        lines.each{ line ->
-        second = lines.split("/")[1] as String
+        lines.each{line ->
+        if (line.contains('Lambda/')){
+        second = line.split("/")[1] as String
         lambdafunc.push("${second}")
+        }
         }
     }
     stage('Build'){
