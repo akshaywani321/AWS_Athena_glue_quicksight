@@ -59,5 +59,3 @@ def commitID() {
     sh 'rm .git/commitID'
     commitID
 }
-
-
