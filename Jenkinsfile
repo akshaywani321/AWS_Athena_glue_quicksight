@@ -1,5 +1,5 @@
 def lambdafunc=[]
-def commitedfiles =[]
+String commitedfiles =[]
 node{
     if (checkFolderForDiffs('/Lambda')) {
     stage('Checkout'){
@@ -16,13 +16,12 @@ node{
         sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> .git/changeset"
         def lines = readFile('.git/changeset').readLines()
         lines.each { String line ->
-        commitedfiles.add(line.trim())   
+        commitedfiles.add("${line}")   
         }
         for (item in commitedfiles) {
             String second = item.split("/")[1]
             lambdafunc.push("${second}")
         }
-        sh 'rm .git/changeset' 
     }
     stage('Build'){
         lambdafunc.forEach {
