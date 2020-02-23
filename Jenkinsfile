@@ -44,6 +44,7 @@ node{
         }
     }
 }
+}
 def checkFolderForDiffs(path) {
     try {
         sh "git diff --quiet --exit-code HEAD~1..HEAD ${path}"
