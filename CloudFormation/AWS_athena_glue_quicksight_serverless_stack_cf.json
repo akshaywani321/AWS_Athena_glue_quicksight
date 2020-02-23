@@ -5,7 +5,7 @@
         "SmartHubStackName":{
             "Description": "Name of cloudformation serverless stack for smart hub",
             "Type": "String",
-            "Default":"smart-hub-athena-glue-stack"
+            "Default":"smart-hub-application-stack"
         }
     },
     "Resources":{
@@ -54,8 +54,12 @@
             "Type":"AWS::Lambda::Function",
             "Properties":{
                 "Description":"Lambda function to convert usage JSON data to Parquet",
-                "FunctionName":"athena-usage-json-to-parquet-data",
+                "FunctionName":"athena-json-to-parquet-data",
                 "Handler":"index.handler",
+                "Code": {
+                    "S3Bucket": {"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref":  "SmartHubStackName"}, "ScriptBucket" ] ]}},
+                    "S3Key": "athena-json-to-parquet-data/function.zip"
+                  },
                 "Runtime":"python3.8",
                 "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
                 "Environment":{
@@ -70,23 +74,11 @@
             "Type":"AWS::Lambda::Function",
             "Properties":{
                 "Description":"Lambda function to convert Location CSV data to Parquet",
-                "FunctionName":"athena-location-csv-to-parquet-data",
-                "Handler":"index.handler",
-                "Runtime":"python3.8",
-                "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
-                "Environment":{
-                    "Variables":{
-                        "DATA_CATALOG":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "SmartHubStackName"}, "GlueDatabase" ] ]}},
-                        "DATA_BUCKET":{"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref": "SmartHubStackName"}, "DataBucket"] ]}}
-                    }
-                }
-            }
-        },
-        "AthenaMaappingJSONtoParquetDataFunction":{
-            "Type":"AWS::Lambda::Function",
-            "Properties":{
-                "Description":"Lambda function to convert Mapping JSON data to Parquet",
-                "FunctionName":"athena-mapping-json-to-parquet-data",
+                "FunctionName":"athena-csv-to-parquet-locations",
+                "Code": {
+                        "S3Bucket": {"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref":  "SmartHubStackName"}, "ScriptBucket" ] ]}},
+                        "S3Key": "athena-csv-to-parquet-locations/function.zip"
+                  },
                 "Handler":"index.handler",
                 "Runtime":"python3.8",
                 "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
@@ -102,7 +94,11 @@
             "Type":"AWS::Lambda::Function",
             "Properties":{
                 "Description":"Lambda function to convert Mapping JSON data to Parquet",
-                "FunctionName":"athena-mapping-json-to-parquet-data",
+                "FunctionName":"athena-json-to-parquet-mappings",
+                "Code": {
+                    "S3Bucket": {"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref":  "SmartHubStackName"}, "ScriptBucket" ] ]}},
+                    "S3Key": "athena-json-to-parquet-mappings/function.zip"
+                  },
                 "Handler":"index.handler",
                 "Runtime":"python3.8",
                 "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
@@ -118,7 +114,11 @@
             "Type":"AWS::Lambda::Function",
             "Properties":{
                 "Description":"Lambda function to Execute ETL query",
-                "FunctionName":"athena-ETL-query-01",
+                "FunctionName":"athena-complex-etl-query",
+                "Code": {
+                    "S3Bucket": {"Fn::ImportValue": {"Fn::Join": [ "-", [ {"Ref":  "SmartHubStackName"}, "ScriptBucket" ] ]}},
+                    "S3Key": "athena-complex-etl-query/function.zip"
+                },
                 "Handler":"index.handler",
                 "Runtime":"python3.8",
                 "Role":{"Fn::GetAtt": ["LambdaExecutionIAMRole","Arn"]},
