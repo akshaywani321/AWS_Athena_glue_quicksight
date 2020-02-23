@@ -21,6 +21,7 @@ node{
                 lambdafunc.push("${second}")
             }
         }
+        sh 'rm .git/changeset'
     }
     stage('Build'){
         lambdafunc.each {
@@ -28,7 +29,9 @@ node{
         } 
     }
     stage('Push'){
-        sh "aws s3 cp .git/${it}-${commitID()}.zip s3://Lambda/${it}"
+        lambdafunc.each {
+            sh "aws s3 cp .git/${it}-${commitID()}.zip s3://Lambda/${it}"
+        }
     }
     stage('Deploy'){
         sh "aws lambda update-function-code --function-name ${functionName} \
