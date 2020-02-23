@@ -21,6 +21,7 @@ logger.setLevel(logging.INFO)
 
 # athena client
 
+
 athena_client = boto3.client('athena')
 
 
