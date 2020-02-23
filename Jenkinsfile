@@ -27,7 +27,7 @@ node{
     }
     stage('Build'){
         lambdafunc.each {
-            sh "zip .git/function.zip Lambda/${it}/index.py"
+            sh "zip -r .git/function.zip Lambda/${it}/index.py"
         } 
     }
     stage('Push'){
