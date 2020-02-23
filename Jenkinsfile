@@ -15,15 +15,16 @@ node{
         sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> .git/changeset"
         def lines = readFile('.git/changeset').readLines()
         lines.each{line ->
-        if (line.contains('Lambda/')){
-        second = line.split("/")[1] as String
-        lambdafunc.push("${second}")
-        }
+            if (line.contains('Lambda/')){
+                println
+                second = line.split("/")[1] as String
+                lambdafunc.push("${second}")
+            }
         }
     }
     stage('Build'){
-        lambdafunc.forEach {
-            sh "zip ${it}-${commitID()}.zip .git/${it}/index.py"
+        lambdafunc.each {
+            sh "zip .git/${it}-${commitID()}.zip Lambda/${it}/index.py"
         } 
     }
     stage('Push'){
