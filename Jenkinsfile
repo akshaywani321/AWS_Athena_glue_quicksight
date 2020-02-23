@@ -1,5 +1,5 @@
 def lambdafunc=[]
-String commitedfiles =[]
+def commitedfiles =[]
 node{
     if (checkFolderForDiffs('/Lambda')) {
     stage('Checkout'){
