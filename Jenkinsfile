@@ -16,7 +16,7 @@ node{
         def lines = readFile('.git/changeset').readLines()
         lines.each{line ->
             if (line.contains('Lambda/')){
-                println
+                println(line)
                 second = line.split("/")[1] as String
                 lambdafunc.push("${second}")
             }
@@ -28,7 +28,7 @@ node{
         } 
     }
     stage('Push'){
-        sh "aws s3 cp ${commitID()}.zip s3://${bucket}"
+        sh "aws s3 cp .git/${it}-${commitID()}.zip s3://Lambda/${it}"
     }
     stage('Deploy'){
         sh "aws lambda update-function-code --function-name ${functionName} \
