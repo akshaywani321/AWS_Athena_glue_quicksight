@@ -25,12 +25,12 @@ node{
     }
     stage('Build'){
         lambdafunc.each {
-            sh "zip .git/${it}-${commitID()}.zip Lambda/${it}/index.py"
+            sh "zip .git/function.zip Lambda/${it}/index.py"
         } 
     }
     stage('Push'){
         lambdafunc.each {
-            sh "aws s3 cp .git/${it}-${commitID()}.zip s3://smart-hub-scriptstore-571941764095-us-east-1/${it}/"
+            sh "aws s3 cp .git/function.zip s3://smart-hub-scriptstore-571941764095-us-east-1/${it}/"
         }
     }
     stage('Deploy'){
