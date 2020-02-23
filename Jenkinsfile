@@ -40,7 +40,7 @@ node{
         sh "aws lambda update-function-code --function-name ${it} \
                 --s3-bucket ${bucket} \
                 --s3-key ${it}/function.zip \
-                --region ${region}"
+                --region ${reigon}"
         }
     }
 }
