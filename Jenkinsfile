@@ -15,7 +15,7 @@ node{
         sh "git diff-tree --no-commit-id --name-only -r ${commitID()} >> .git/changeset"
         def lines = readFile('.git/changeset').readLines()
         lines.each{ line ->
-        String second = line.split("/")[1]
+        second = lines.split("/")[1] as String
         lambdafunc.push("${second}")
         }
     }
