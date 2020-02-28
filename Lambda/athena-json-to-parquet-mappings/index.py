@@ -7,8 +7,8 @@ data_catalog = os.getenv('DATA_CATALOG')
 data_bucket = os.getenv('DATA_BUCKET')
 
 # variables
-input_directory = 'sensor_mappings_json'
-output_directory = 'sensor_mappings_parquet'
+input_directory = 'smart_hub_sensor_mapping_json'
+output_directory = 'smart_hub_sensor_mappings_parquet'
 
 # logging
 logger = logging.getLogger()

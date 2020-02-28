@@ -7,7 +7,7 @@ data_catalog = os.getenv('DATA_CATALOG')
 data_bucket = os.getenv('DATA_BUCKET')
 
 # variables
-input_directory = 'smart_hub_locations_csv'
+input_directory = 'smart_hub_location_csv'
 output_directory = 'smart_hub_locations_parquet'
 
 # logging
