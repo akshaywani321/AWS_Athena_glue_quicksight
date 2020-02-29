@@ -271,7 +271,8 @@
                     "Name" : "smart_hub_rates_xml",
                     "Parameters" : {
                         "classification": "xml", 
-                        "compressionType": "none" 
+                        "compressionType": "none" ,
+                        "rowTag":"row"
                     },
                     "TableType" : "EXTERNAL TABLE",
                     "StorageDescriptor" : {
@@ -680,31 +681,6 @@
                     }
                 }
 
-            }
-        },
-        "NewVolume": {
-            "Type": "AWS::EC2::Volume",
-            "Properties": {
-                "Size": "20",
-                "AvailabilityZone": {
-                    "Fn::GetAtt": [
-                        "EC2Instance",
-                        "AvailabilityZone"
-                    ]
-                },
-                "VolumeType": "gp2"
-            }
-        },
-        "MountPoint": {
-            "Type": "AWS::EC2::VolumeAttachment",
-            "Properties": {
-                "InstanceId": {
-                    "Ref": "EC2Instance"
-                },
-                "VolumeId": {
-                    "Ref": "NewVolume"
-                },
-                "Device": "/dev/sdh"
             }
         },
         "myInstanceProfile": {
